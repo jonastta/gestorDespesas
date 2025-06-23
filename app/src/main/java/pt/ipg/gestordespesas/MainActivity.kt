@@ -27,7 +27,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GestorDeDespesasApp() {
-    val listaDespesas = remember { mutableStateListOf<Despesa>() }
+    val listaDespesas = remember {
+        mutableStateListOf(
+            Despesa("Supermercado", "Alimentação", 45.60),
+            Despesa("Gasolina", "Transporte", 30.00),
+            Despesa("Netflix", "Subscrições", 10.99)
+        )
+    }
     var descricao by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
     var valor by remember { mutableStateOf("") }
