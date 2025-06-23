@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import pt.ipg.gestordespesas.model.Despesa
+import androidx.compose.material.icons.filled.Edit
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +27,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GestorDeDespesasApp() {
+    val listaDespesas = remember { mutableStateListOf<Despesa>() }
     var descricao by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
     var valor by remember { mutableStateOf("") }
-    val listaDespesas = remember { mutableStateListOf<Despesa>() }
+    var despesaEmEdicao by remember { mutableStateOf<Despesa?>(null) }
 
     val total = listaDespesas.sumOf { it.valor }
 
@@ -67,13 +70,22 @@ fun GestorDeDespesasApp() {
             onClick = {
                 val valorDouble = valor.toDoubleOrNull()
                 if (valorDouble != null && descricao.isNotBlank()) {
-                    listaDespesas.add(
-                        Despesa(
-                            descricao = descricao,
-                            categoria = categoria,
-                            valor = valorDouble
-                        )
+                    val novaDespesa = Despesa(
+                        descricao = descricao,
+                        categoria = categoria,
+                        valor = valorDouble
                     )
+
+                    if (despesaEmEdicao != null) {
+                        val index = listaDespesas.indexOf(despesaEmEdicao)
+                        if (index != -1) {
+                            listaDespesas[index] = novaDespesa
+                        }
+                        despesaEmEdicao = null
+                    } else {
+                        listaDespesas.add(novaDespesa)
+                    }
+
                     descricao = ""
                     categoria = ""
                     valor = ""
@@ -81,7 +93,7 @@ fun GestorDeDespesasApp() {
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Adicionar")
+            Text(if (despesaEmEdicao != null) "Guardar alterações" else "Adicionar")
         }
 
         Spacer(Modifier.height(16.dp))
@@ -107,13 +119,23 @@ fun GestorDeDespesasApp() {
                             Text("Categoria: ${despesa.categoria}")
                             Text("Valor: € %.2f".format(despesa.valor))
                         }
-                        IconButton(onClick = { listaDespesas.remove(despesa) }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Apagar despesa"
-                            )
+                        Row {
+                            IconButton(onClick = {
+                                descricao = despesa.descricao
+                                categoria = despesa.categoria
+                                valor = despesa.valor.toString()
+                                despesaEmEdicao = despesa
+                            }) {
+                                Icon(Icons.Default.Edit, contentDescription = "Editar despesa")
+                            }
+                            IconButton(onClick = {
+                                listaDespesas.remove(despesa)
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Apagar despesa")
+                            }
                         }
                     }
+
                 }
             }
         }
