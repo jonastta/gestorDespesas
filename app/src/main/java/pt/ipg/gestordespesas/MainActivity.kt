@@ -10,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import pt.ipg.gestordespesas.model.Despesa
 
 class MainActivity : ComponentActivity() {
@@ -94,13 +96,27 @@ fun GestorDeDespesasApp() {
                         .padding(vertical = 4.dp),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
-                    Column(Modifier.padding(8.dp)) {
-                        Text("Descrição: ${despesa.descricao}")
-                        Text("Categoria: ${despesa.categoria}")
-                        Text("Valor: € %.2f".format(despesa.valor))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("Descrição: ${despesa.descricao}")
+                            Text("Categoria: ${despesa.categoria}")
+                            Text("Valor: € %.2f".format(despesa.valor))
+                        }
+                        IconButton(onClick = { listaDespesas.remove(despesa) }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Apagar despesa"
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
